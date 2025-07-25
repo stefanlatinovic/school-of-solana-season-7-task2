@@ -28,7 +28,11 @@ impl OperationType {
     // TODO: Return the string representation of the operation sign
     // Addition -> "+", Subtraction -> "-", Multiplication -> "*"
     pub fn get_sign(&self) -> &str {
-        todo!()
+        match self {
+            OperationType::Addition => "+",
+            OperationType::Subtraction => "-",
+            OperationType::Multiplication => "*",
+        }
     }
     
     // TODO: Perform the operation on two i64 numbers with overflow protection
@@ -36,7 +40,11 @@ impl OperationType {
     //
     // Example: OperationType::Multiplication.perform(x, y)
     pub fn perform(&self, x: i64, y: i64) -> Option<i64> {
-        todo!()
+        match self {
+            OperationType::Addition => x.checked_add(y),
+            OperationType::Subtraction => x.checked_sub(y),
+            OperationType::Multiplication => x.checked_mul(y),
+        }
     }
 }
 
@@ -50,7 +58,11 @@ pub struct Operation {
 impl Operation {
     // TODO: Create a new Operation with the given parameters
     pub fn new(first_num: i64, second_num: i64, operation_type: OperationType) -> Self {
-        todo!()
+        Operation {
+            first_num,
+            second_num,
+            operation_type,
+        }
     }
 }
 
@@ -61,25 +73,37 @@ pub struct Calculator {
 impl Calculator {
     // TODO: Create a new Calculator with empty history
     pub fn new() -> Self {
-        todo!()
+        Calculator { history: vec![] }
     }
     
     // TODO: Perform addition and store successful operations in history
     // Return Some(result) on success, None on overflow
     pub fn addition(&mut self, x: i64, y: i64) -> Option<i64> {
-        todo!()
+        let result = x.checked_add(y);
+        if result.is_some() {
+            Self::save_to_history(self, x, y, OperationType::Addition);
+        }
+        result
     }
     
     // TODO: Perform subtraction and store successful operations in history
     // Return Some(result) on success, None on overflow
     pub fn subtraction(&mut self, x: i64, y: i64) -> Option<i64> {
-        todo!()
+        let result = x.checked_sub(y);
+        if result.is_some() {
+            Self::save_to_history(self, x, y, OperationType::Subtraction);
+        }
+        result
     }
     
     // TODO: Perform multiplication and store successful operations in history
     // Return Some(result) on success, None on overflow
     pub fn multiplication(&mut self, x: i64, y: i64) -> Option<i64> {
-        todo!()
+        let result = x.checked_mul(y);
+        if result.is_some() {
+            Self::save_to_history(self, x, y, OperationType::Multiplication);
+        }
+        result
     }
     
     // TODO: Generate a formatted string showing all operations in history
@@ -87,18 +111,49 @@ impl Calculator {
     //
     // Example: "0: 5 + 3 = 8\n1: 10 - 2 = 8\n"
     pub fn show_history(&self) -> String{
-        todo!()
+        let mut result = String::from("");
+        for (i, e) in self.history.iter().enumerate() {
+            let operation_result = e.operation_type.perform(e.first_num, e.second_num).unwrap(); // Can be safely unwrapped because only successful operations are stored in the history
+            result.push_str(
+                format!(
+                    "{}: {} {} {} = {}\n",
+                    i,
+                    e.first_num,
+                    e.operation_type.get_sign(),
+                    e.second_num,
+                    operation_result
+                )
+                .as_str(),
+            );
+        }
+        result
     }
     
     // TODO: Repeat an operation from history by index
     // Add the repeated operation to history and return the result
     // Return None if the index is invalid
     pub fn repeat(&mut self, operation_index: usize) -> Option<i64>{
-        todo!()
+        if operation_index >= self.history.len() {
+            return None;
+        }
+        let operation = self.history[operation_index].clone();
+        self.history.push(operation.clone());
+        operation
+            .operation_type
+            .perform(operation.first_num, operation.second_num)
     }
     
     // TODO: Clear all operations from history
     pub fn clear_history(&mut self) {
-        todo!()
+        self.history.clear();
+    }
+
+    // Helper function for saving an operation to history
+    fn save_to_history(&mut self, x: i64, y: i64, operation_type: OperationType) {
+        self.history.push(Operation {
+            first_num: x,
+            second_num: y,
+            operation_type: operation_type,
+        });
     }
 }

@@ -40,19 +40,43 @@ pub enum Error {
 // All methods should return the corresponding error when invalid values are provided.
 impl Rectangle {
     pub fn new(width: f64, height: f64) -> Result<Self, Error> {
-        todo!()
+        if Self::is_invalid_width(width) {
+            return Err(Error::InvalidWidth);
+        }
+        if Self::is_invalid_heigth(height) {
+            return Err(Error::InvalidHeight);
+        }
+        Ok(Rectangle { width, height })
     }
     pub fn set_width(&mut self, width: f64) -> Result<(), Error> {
-        todo!()
+        if Self::is_invalid_width(width) {
+            return Err(Error::InvalidWidth);
+        }
+        self.width = width;
+        Ok(())
     }
     pub fn set_height(&mut self, height: f64) -> Result<(), Error> {
-        todo!()
+        if Self::is_invalid_heigth(height) {
+            return Err(Error::InvalidHeight);
+        }
+        self.height = height;
+        Ok(())
     }
     pub fn get_width(&self) -> f64 {
-        todo!()
+        self.width
     }
     pub fn get_height(&self) -> f64 {
-        todo!()
+        self.height
+    }
+
+    // Helper function to check if the width is invalid
+    fn is_invalid_width(width: f64) -> bool {
+        width < 0.0
+    }
+
+    // Helper function to check if the height is invalid
+    fn is_invalid_heigth(height: f64) -> bool {
+        height < 0.0
     }
 }
 
@@ -62,16 +86,47 @@ impl Rectangle {
 // All methods should return the corresponding error when invalid values are provided.
 impl Circle {
     pub fn new(radius: f64) -> Result<Self, Error> {
-        todo!()
+        if Self::is_invalid_radius(radius) {
+            return Err(Error::InvalidRadius);
+        }
+        Ok(Circle { radius })
     }
     pub fn set_radius(&mut self, radius: f64) -> Result<(), Error> {
-        todo!()
+        if Self::is_invalid_radius(radius) {
+            return Err(Error::InvalidRadius);
+        }
+        self.radius = radius;
+        Ok(())
     }
     pub fn get_radius(&self) -> f64 {
-        todo!()
+        self.radius
+    }
+
+    // Helper function to check if the radius is invalid
+    fn is_invalid_radius(radius: f64) -> bool {
+        radius < 0.0
     }
 }
 
 // TODO: Implement the Shape trait for both Rectangle and Circle structs.
 // 
 // Hint: Use std::f64::consts::PI to calculate the area and circumference of the circle.
+impl Shape for Rectangle {
+    fn area(&self) -> f64 {
+        self.width * self.height
+    }
+
+    fn perimeter(&self) -> f64 {
+        2.0 * self.width + 2.0 * self.height
+    }
+}
+
+impl Shape for Circle {
+    fn area(&self) -> f64 {
+        self.radius * self.radius * std::f64::consts::PI
+    }
+    
+    fn perimeter(&self) -> f64 {
+        2.0 * self.radius * std::f64::consts::PI
+    }
+}
